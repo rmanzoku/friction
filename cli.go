@@ -1,4 +1,4 @@
-package main
+package friction
 
 import (
 	"flag"
@@ -42,9 +42,9 @@ func (c *CLI) Run(args []string) int {
 		return ExitCodeOK
 	}
 
-	db := flags.Arg(0)
+	dbname := flags.Arg(0)
 
-	if db == "" {
+	if dbname == "" {
 		fmt.Fprint(c.outStream, "Set DB name")
 		return ExitCodeParseFlagError
 	}
@@ -55,24 +55,24 @@ func (c *CLI) Run(args []string) int {
 		password,
 		host,
 		port,
-		db,
+		dbname,
 	)
 
 	fmt.Println(dsn)
 
-	conn := InitDB(dsn)
+	db := InitDB(dsn)
 
-	tables, _ := ShowTables(conn)
+	tables, _ := ShowTables(db)
 
 	fmt.Fprint(c.outStream, tables)
 	for _, t := range tables {
-		columns, err := GetIndexColumns(conn, t)
+		columns, err := GetIndexColumns(db, t)
 		if err != nil {
 			panic(err)
 		}
 
 		for _, c := range columns {
-			WarmUp(conn, t, c)
+			WarmUp(db, t, c, 3)
 		}
 	}
 

@@ -1,4 +1,4 @@
-package main
+package friction
 
 import (
 	"database/sql"
@@ -97,11 +97,9 @@ func GetIndexColumns(db *sql.DB, table string) ([]string, error) {
 	return columns, nil
 }
 
-func WarmUp(db *sql.DB, table string, column string) error {
+func WarmUp(db *sql.DB, table string, column string, count int) error {
 
-	const count = 3
-
-	for i := 0; i < 3; i++ {
+	for i := 0; i < count; i++ {
 		log.Println(table, column, i+1)
 		rows, err := db.Query("SELECT COUNT(" + column + ") FROM " + table)
 		if err != nil {
