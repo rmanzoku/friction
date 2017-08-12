@@ -1,9 +1,11 @@
-package friction
+package main
 
 import (
 	"flag"
 	"fmt"
 	"io"
+
+	"github.com/rmanzoku/friction"
 )
 
 const (
@@ -60,19 +62,19 @@ func (c *CLI) Run(args []string) int {
 
 	fmt.Println(dsn)
 
-	db := InitDB(dsn)
+	db := friction.InitDB(dsn)
 
-	tables, _ := ShowTables(db)
+	tables, _ := friction.ShowTables(db)
 
 	fmt.Fprint(c.outStream, tables)
 	for _, t := range tables {
-		columns, err := GetIndexColumns(db, t)
+		columns, err := friction.GetIndexColumns(db, t)
 		if err != nil {
 			panic(err)
 		}
 
 		for _, c := range columns {
-			WarmUp(db, t, c, 3)
+			friction.WarmUp(db, t, c, 3)
 		}
 	}
 
